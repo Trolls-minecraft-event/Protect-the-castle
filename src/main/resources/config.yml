@@ -1,0 +1,5 @@
+---
+debug: false
+sqlite:
+    DBpath: sqlite.sqlite
+    table: test

@@ -1,0 +1,16 @@
+name: Event
+version: '${project.version}'
+main: tk.melosh.troldehvalp.Troldehvalp
+api-version: 1.18
+load: STARTUP
+authors: [ Melosh, Troldehvalp ]
+
+commands:
+  test:
+    description: "a test command"
+
+  getplayer:
+      description: "get player from db"
+
+  createplayer:
+    description: "add player to db"
