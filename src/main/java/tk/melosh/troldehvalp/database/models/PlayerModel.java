@@ -31,8 +31,9 @@ public class PlayerModel {
             statement.setString(1, uuid.toString());
             statement.execute();
             rs = statement.getResultSet();
-
-            if(rs.next()) {
+            boolean next = rs.next();
+            plugin.LOGGER.info(String.format("next is %s", next));
+            if(next) {
                 sql = "UPDATE players SET username = ?, money = ? WHERE uuid = ?";
                 statement = conn.prepareStatement(sql);
                 statement.setString(1, username);
@@ -40,7 +41,6 @@ public class PlayerModel {
                 statement.setString(3, uuid.toString());
             }
             statement.close();
-            conn.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -56,12 +56,11 @@ public class PlayerModel {
             stmt.setInt(2, money);
             stmt.setString(3, uuid.toString());
             stmt.executeUpdate();
-            stmt.close();
             conn.close();
             plugin.LOGGER.info("executed statement");
             return true;
         } catch (SQLException e) {
-            plugin.LOGGER.severe(e.getSQLState());
+            plugin.LOGGER.severe(e.getMessage());
             return false;
         }
 

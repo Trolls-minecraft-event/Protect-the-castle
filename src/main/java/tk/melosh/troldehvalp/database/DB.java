@@ -26,7 +26,7 @@ public class DB {
             ResultSet rs = stmt.executeQuery();
             if(!(rs.next())) {
                 plugin.LOGGER.severe("creating new database");
-                sql = "CREATE TABLE players(uuid TEXT, username TEXT NOT NULL, money INT DEFAULT 100)";
+                sql = "CREATE TABLE players(uuid TEXT PRIMARY KEY NOT NULL , username TEXT NOT NULL, money INT DEFAULT 100)";
                 PreparedStatement statement = conn.prepareStatement(sql);
                 statement.execute();
                 statement.close();
