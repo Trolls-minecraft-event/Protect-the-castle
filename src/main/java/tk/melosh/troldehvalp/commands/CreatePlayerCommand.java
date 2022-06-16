@@ -8,12 +8,13 @@ import org.bukkit.entity.Player;
 import tk.melosh.troldehvalp.Troldehvalp;
 import tk.melosh.troldehvalp.database.models.PlayerModel;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
-public class CreatePlayer implements CommandExecutor {
+public class CreatePlayerCommand implements CommandExecutor {
     Troldehvalp plugin;
 
-    public CreatePlayer(Troldehvalp plugin) {
+    public CreatePlayerCommand(Troldehvalp plugin) {
         this.plugin = plugin;
         plugin.getCommand("createplayer").setExecutor(this);
     }
@@ -35,10 +36,23 @@ public class CreatePlayer implements CommandExecutor {
         sender.sendMessage(playerUUID.toString());
         sender.sendMessage(username);
 
-        PlayerModel newPlayer = new PlayerModel(playerUUID, username, 100, plugin);
+        try {
+            if(PlayerModel.getPlayer(playerUUID) != null) {
+                sender.sendMessage("player already exists");
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        PlayerModel newPlayer = new PlayerModel(playerUUID, username, 100);
 
         try {
-            newPlayer.save();
+            if(newPlayer.save()) {
+                sender.sendMessage("player saved");
+            } else {
+                sender.sendMessage("failed to save player. Are they already in the database?");
+            }
         } catch (RuntimeException e) {
             sender.sendMessage("failed to run query");
             sender.sendMessage(e.getMessage());
