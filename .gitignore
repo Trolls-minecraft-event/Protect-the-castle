@@ -132,5 +132,4 @@ server/version_history.json
 /server/permissions.yml
 /server/spigot.yml
 server/plugins/Troldehvalp-1.0-SNAPSHOT.jar
-/server/plugins/Event/sqlite.db
-/server/plugins/Event/config.yml
+/server/plugins/Event

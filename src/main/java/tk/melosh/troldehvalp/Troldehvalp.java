@@ -2,20 +2,19 @@ package tk.melosh.troldehvalp;
 
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
-import tk.melosh.troldehvalp.commands.CreatePlayer;
-import tk.melosh.troldehvalp.commands.GetPlayer;
+import tk.melosh.troldehvalp.commands.CreatePlayerCommand;
+import tk.melosh.troldehvalp.commands.GetPlayerCommand;
 import tk.melosh.troldehvalp.commands.TestCommand;
 import tk.melosh.troldehvalp.database.DB;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.util.logging.Logger;
 
 public final class Troldehvalp extends JavaPlugin {
     public Logger LOGGER = this.getLogger();
     public Configuration CONFIG = this.getConfig();
-    public DB db;
+    public DB db = DB.getInstance();
     @Override
     public void onEnable() {
 
@@ -24,8 +23,10 @@ public final class Troldehvalp extends JavaPlugin {
 
         // Register commands
         new TestCommand(this);
-        new GetPlayer(this);
-        new CreatePlayer(this);
+        new GetPlayerCommand(this);
+        new CreatePlayerCommand(this);
+
+        // Register event listeners
 
         // Config Stuff
         this.saveDefaultConfig();
@@ -36,7 +37,9 @@ public final class Troldehvalp extends JavaPlugin {
 
         File sqliteDbFile = new File(String.format("%s/%s", getDataFolder(), CONFIG.getString("sqlite.DBpath")));
 
-        db = new DB(sqliteDbFile.getAbsolutePath(), CONFIG.getString("sqlite.table"), this);
+        db.setPath(String.format("jdbc:sqlite:%s", sqliteDbFile.getAbsolutePath()));
+        db.setPlugin(this);
+        db.init();
         Connection connection = db.getConnection();
         if(connection == null) {
             LOGGER.severe("db connection is null. Disabling");

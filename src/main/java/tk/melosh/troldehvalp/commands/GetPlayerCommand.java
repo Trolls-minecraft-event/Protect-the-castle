@@ -6,17 +6,17 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import tk.melosh.troldehvalp.Troldehvalp;
-import tk.melosh.troldehvalp.database.models.PlayerModel;
+import tk.melosh.troldehvalp.database.DB;
 
 import java.sql.*;
-import java.util.UUID;
+import java.util.Objects;
 
-public class GetPlayer implements CommandExecutor {
+public class GetPlayerCommand implements CommandExecutor {
         public Troldehvalp plugin;
 
-    public GetPlayer(Troldehvalp plugin) {
+    public GetPlayerCommand(Troldehvalp plugin) {
         this.plugin = plugin;
-        plugin.getCommand("getplayer").setExecutor(this);
+        Objects.requireNonNull(plugin.getCommand("getplayer")).setExecutor(this);
     }
 
     @Override
@@ -30,8 +30,11 @@ public class GetPlayer implements CommandExecutor {
             return false;
         }
         Player player = Bukkit.getPlayer(args[0]);
-
-        Connection conn = plugin.db.getConnection();
+        if(player == null) {
+            sender.sendMessage("player wasn't recognised by the server");
+            return true;
+        }
+        Connection conn = DB.getInstance().getConnection();
         ResultSet rs;
         try {
             String sql = "SELECT 1 FROM players WHERE uuid = ?";

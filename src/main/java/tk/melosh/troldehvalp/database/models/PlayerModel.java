@@ -1,6 +1,7 @@
 package tk.melosh.troldehvalp.database.models;
 
 import tk.melosh.troldehvalp.Troldehvalp;
+import tk.melosh.troldehvalp.database.DB;
 
 import javax.annotation.Nullable;
 import java.sql.*;
@@ -11,44 +12,34 @@ public class PlayerModel {
     public UUID uuid;
     public String username;
     public int money;
-    static Troldehvalp plugin;
 
 
-    public PlayerModel(UUID uuid, String username, int money, Troldehvalp plugin) {
+    public PlayerModel(UUID uuid, String username, int money) {
         this.uuid = uuid;
         this.username = username;
         this.money = money;
-        PlayerModel.plugin = plugin;
+    }
+
+    public static PlayerModel getPlayer(UUID uuid) throws SQLException {
+        Connection connection = DB.getInstance().getConnection();
+        String sql = "SELECT 1 FROM players WHERE uuid = ?";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, uuid.toString());
+        ResultSet rs = statement.executeQuery();
+        if(!rs.next()) {
+            return null;
+        }
+        connection.close();
+        return new PlayerModel(UUID.fromString(rs.getString("uuid")), rs.getString("username"), rs.getInt("money"));
     }
 
     @Nullable
     public Boolean save() {
-        Connection conn = plugin.db.getConnection();
-        ResultSet rs;
-        try {
-            String sql = "SELECT 1 FROM players WHERE uuid = ?";
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, uuid.toString());
-            statement.execute();
-            rs = statement.getResultSet();
-
-            if(rs.next()) {
-                sql = "UPDATE players SET username = ?, money = ? WHERE uuid = ?";
-                statement = conn.prepareStatement(sql);
-                statement.setString(1, username);
-                statement.setInt(2, money);
-                statement.setString(3, uuid.toString());
-            }
-            statement.close();
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        Connection conn = DB.getInstance().getConnection();
+        
         String sql;
-        plugin.LOGGER.info("getting player for if statement");
 
         sql = "INSERT INTO players(username, money, uuid) VALUES(?,?,?)";
-        plugin.LOGGER.info(sql);
 
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -56,12 +47,9 @@ public class PlayerModel {
             stmt.setInt(2, money);
             stmt.setString(3, uuid.toString());
             stmt.executeUpdate();
-            stmt.close();
             conn.close();
-            plugin.LOGGER.info("executed statement");
             return true;
         } catch (SQLException e) {
-            plugin.LOGGER.severe(e.getSQLState());
             return false;
         }
 

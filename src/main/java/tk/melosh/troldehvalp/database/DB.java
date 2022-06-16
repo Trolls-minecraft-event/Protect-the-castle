@@ -2,61 +2,76 @@ package tk.melosh.troldehvalp.database;
 
 import tk.melosh.troldehvalp.Troldehvalp;
 
-import java.sql.*;
-import java.util.logging.Logger;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class DB {
-    public String path;
-    public String table;
-    public Troldehvalp plugin;
-    public DB(String path, String table, Troldehvalp plugin) {
-        if(plugin.CONFIG.getBoolean("debug")) {
-            this.path = "jdbc:sqlite::memory:";
-        } else {
-            this.path = String.format("jdbc:sqlite:%s", path);
-        }
-        plugin.LOGGER.info(String.format("path = %s", this.path));
-        this.table = table;
-        this.plugin = plugin;
+    private String path = null;
+    private Troldehvalp plugin = null;
+    private Boolean hasStarted = false;
+    private static DB instance = null;
 
-        Connection conn = getConnection();
-        String sql = "SELECT * FROM main.sqlite_master WHERE type = \"table\" AND name = \"player\"";
-        try {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
-            if(!(rs.next())) {
-                plugin.LOGGER.severe("creating new database");
-                sql = "CREATE TABLE players(uuid TEXT, username TEXT NOT NULL, money INT DEFAULT 100)";
-                PreparedStatement statement = conn.prepareStatement(sql);
-                statement.execute();
-                statement.close();
-                conn.close();
-            }
-        } catch (SQLException e) {
-            plugin.LOGGER.info(e.getSQLState());
-            throw new RuntimeException(e);
-        }
+    private DB() {
 
     }
 
-    public Connection getConnection() {
-
-        try {
-            Class.forName("org.sqlite.JDBC");
-            Connection connection = DriverManager.getConnection(path);
-            if(connection == null) {
-                throw new RuntimeException("failed to get connection");
-            }
-            connection.setAutoCommit(true);
-            return connection;
-        } catch (SQLException e) {
-            plugin.LOGGER.severe("failed to connect to db. disabling!");
-            plugin.getPluginLoader().disablePlugin(plugin);
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            plugin.LOGGER.severe("failed: sqlite missing. disabling!");
-            throw new RuntimeException(e);
+    public static DB getInstance() {
+        if(instance == null) {
+            instance = new DB();
         }
 
+        return instance;
+    }
+
+    public void init() {
+        try {
+            System.out.print(Class.forName("org.sqlite.JDBC"));
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if(hasStarted)
+            throw new RuntimeException("(DB) database has already been initiated");
+        instance.hasStarted = true;
+        Connection connection = getConnection();
+        if(connection == null) {
+            hasStarted = false;
+            throw new RuntimeException("failed to get connection");
+        }
+        String sql = "CREATE TABLE IF NOT EXISTS players(uuid TEXT PRIMARY KEY, username TEXT NOT NULL, money INT NOT NULL DEFAULT 100)";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.execute();
+            connection.close();
+        } catch (SQLException e) {
+            hasStarted = false;
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Connection getConnection() {
+        try {
+            Class.forName("org.sqlite.JDBC");
+            if(!hasStarted)
+                throw new RuntimeException("(DB) db Has not been initiated yet");
+            if(path == null)
+                throw new RuntimeException("(DB) path has to be set");
+            if(plugin == null)
+                throw new RuntimeException("(DB) plugin has to be set");
+
+            return  DriverManager.getConnection(path);
+
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setPlugin(Troldehvalp plugin) {
+        this.plugin = plugin;
     }
 }
