@@ -16,3 +16,10 @@ jobs:
 
             - name: maven build
               run: mvn --batch-mode --update-snapshots package
+
+            - name: release
+              uses: GongT/actions-recreate-release@v1
+              env:
+                GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+              with:
+                tag_name: latest
