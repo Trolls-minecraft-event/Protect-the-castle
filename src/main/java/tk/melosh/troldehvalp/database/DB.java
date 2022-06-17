@@ -28,9 +28,7 @@ public class DB {
     public void init() {
         try {
             System.out.print(Class.forName("org.sqlite.JDBC"));
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+
         if(hasStarted)
             throw new RuntimeException("(DB) database has already been initiated");
         instance.hasStarted = true;
@@ -40,12 +38,16 @@ public class DB {
             throw new RuntimeException("failed to get connection");
         }
         String sql = "CREATE TABLE IF NOT EXISTS players(uuid TEXT PRIMARY KEY, username TEXT NOT NULL, money INT NOT NULL DEFAULT 100)";
-        try {
+
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.execute();
             connection.close();
         } catch (SQLException e) {
             hasStarted = false;
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            hasStarted = false;
+            System.out.println("sqlite jdbc hasnt been shaded into the jar");
             throw new RuntimeException(e);
         }
     }
@@ -60,9 +62,13 @@ public class DB {
             if(plugin == null)
                 throw new RuntimeException("(DB) plugin has to be set");
 
-            return  DriverManager.getConnection(path);
-
+            Connection connection = DriverManager.getConnection(path);
+            if(connection == null) {
+                throw new RuntimeException("connection failed");
+            }
+            return connection;
         } catch (ClassNotFoundException | SQLException e) {
+            System.out.println("getConnection threw an exception");
             throw new RuntimeException(e);
         }
     }

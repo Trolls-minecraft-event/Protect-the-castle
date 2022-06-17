@@ -30,8 +30,10 @@ public class PlayerModel {
             System.out.println("player is null");
             return null;
         }
+
+        PlayerModel fetchedPlayer = new PlayerModel(UUID.fromString(rs.getString("uuid")), rs.getString("username"), rs.getInt("money"));
         connection.close();
-        return new PlayerModel(UUID.fromString(rs.getString("uuid")), rs.getString("username"), rs.getInt("money"));
+        return fetchedPlayer;
     }
 
     @Nullable
