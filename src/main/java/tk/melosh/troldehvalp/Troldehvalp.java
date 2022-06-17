@@ -6,6 +6,7 @@ import tk.melosh.troldehvalp.commands.CreatePlayerCommand;
 import tk.melosh.troldehvalp.commands.GetPlayerCommand;
 import tk.melosh.troldehvalp.commands.TestCommand;
 import tk.melosh.troldehvalp.database.DB;
+import tk.melosh.troldehvalp.events.MobKillEvent;
 
 import java.io.File;
 import java.sql.Connection;
@@ -27,7 +28,7 @@ public final class Troldehvalp extends JavaPlugin {
         new CreatePlayerCommand(this);
 
         // Register event listeners
-
+        new MobKillEvent(this);
         // Config Stuff
         this.saveDefaultConfig();
 
