@@ -14,3 +14,10 @@ commands:
 
   createplayer:
     description: "add player to db"
+
+  firetest:
+    description: "fire a snowball that exploades on impact"
+
+  makegun:
+    description: "hold something in your hand"
+    usage: "Usage /<command> [int] [int] [int]"

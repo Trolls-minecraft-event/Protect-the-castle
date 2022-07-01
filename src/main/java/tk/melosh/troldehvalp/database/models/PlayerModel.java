@@ -1,8 +1,8 @@
 package tk.melosh.troldehvalp.database.models;
 
+import org.jetbrains.annotations.Nullable;
 import tk.melosh.troldehvalp.database.DB;
 
-import javax.annotation.Nullable;
 import java.sql.*;
 import java.util.UUID;
 
@@ -26,8 +26,6 @@ public class PlayerModel {
         statement.setString(1, playerUUID.toString());
         ResultSet rs = statement.executeQuery();
         if(!rs.next()) {
-            System.out.println(statement);
-            System.out.println("player is null");
             return null;
         }
 
