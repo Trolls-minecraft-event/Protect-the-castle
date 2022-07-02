@@ -2,11 +2,10 @@ package tk.melosh.troldehvalp;
 
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
-import tk.melosh.troldehvalp.commands.CreatePlayerCommand;
-import tk.melosh.troldehvalp.commands.GetPlayerCommand;
-import tk.melosh.troldehvalp.commands.TestCommand;
+import tk.melosh.troldehvalp.commands.*;
 import tk.melosh.troldehvalp.database.DB;
 import tk.melosh.troldehvalp.events.MobKillEvent;
+import tk.melosh.troldehvalp.events.RightClickEvent;
 
 import java.io.File;
 import java.sql.Connection;
@@ -26,9 +25,12 @@ public final class Troldehvalp extends JavaPlugin {
         new TestCommand(this);
         new GetPlayerCommand(this);
         new CreatePlayerCommand(this);
+        new FireTestCommand(this);
+        new MakeGunCommand(this);
 
         // Register event listeners
         new MobKillEvent(this);
+        new RightClickEvent(this);
         // Config Stuff
         this.saveDefaultConfig();
 
