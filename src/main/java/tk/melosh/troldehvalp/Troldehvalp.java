@@ -15,6 +15,7 @@ public final class Troldehvalp extends JavaPlugin {
     public Logger LOGGER = this.getLogger();
     public Configuration CONFIG = this.getConfig();
     public DB db = DB.getInstance();
+
     @Override
     public void onEnable() {
 
@@ -38,11 +39,15 @@ public final class Troldehvalp extends JavaPlugin {
         if(!getDataFolder().isDirectory())
             getDataFolder().mkdirs();
 
-        File sqliteDbFile = new File(String.format("%s/%s", getDataFolder(), CONFIG.getString("sqlite.DBpath")));
-
-        db.setPath(String.format("jdbc:sqlite:%s", sqliteDbFile.getAbsolutePath()));
+        db.setDbname(CONFIG.getString("db.database"));
+        db.setHost(CONFIG.getString("db.host"));
+        db.setPort(CONFIG.getString("db.port"));
+        db.setUsername(CONFIG.getString("db.username"));
+        db.setPassword(CONFIG.getString("db.password"));
+        db.setSchema(CONFIG.getString("db.schema"));
         db.setPlugin(this);
         db.init();
+
         Connection connection = db.getConnection();
         if(connection == null) {
             LOGGER.severe("db connection is null. Disabling");

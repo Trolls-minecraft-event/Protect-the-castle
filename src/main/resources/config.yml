@@ -1,5 +1,9 @@
 ---
 debug: false
-sqlite:
-    DBpath: sqlite.sqlite
-    table: test
+db:
+    username: username
+    password: password
+    host: melosh.tk
+    port: 5432
+    database: debug_pluginDb
+    schema: melosh

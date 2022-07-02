@@ -24,8 +24,11 @@ public class MobKillEvent implements Listener {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity target = event.getEntity();
+        event.getDrops().clear();
+        event.setDroppedExp(0);
 
         LivingEntity killer;
+
         if(target.getType() != EntityType.COW)
             return;
 
@@ -41,8 +44,7 @@ public class MobKillEvent implements Listener {
         if(killer == null) {
             return;
         }
-        event.getDrops().clear();
-        event.setDroppedExp(0);
+
         try {
             PlayerModel player = PlayerModel.getPlayer(killer.getUniqueId());
             if(player == null) {
