@@ -22,12 +22,12 @@ public class CreatePlayerCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 0) {
-            sender.sendMessage("arg 1 missing. please provide a player");
+            sender.sendMessage("Arg 1 missing. Please provide a player.");
             return false;
         }
         Player target = Bukkit.getPlayer(args[0]);
         if(target == null) {
-            sender.sendMessage("player not found");
+            sender.sendMessage("Player not found.");
             return false;
         }
         UUID playerUUID = target.getUniqueId();
@@ -38,7 +38,7 @@ public class CreatePlayerCommand implements CommandExecutor {
 
         try {
             if(PlayerModel.getPlayer(playerUUID) != null) {
-                sender.sendMessage("player already exists");
+                sender.sendMessage("Player already exists.");
                 return true;
             }
         } catch (SQLException e) {
@@ -49,12 +49,12 @@ public class CreatePlayerCommand implements CommandExecutor {
 
         try {
             if(newPlayer.save()) {
-                sender.sendMessage("player saved");
+                sender.sendMessage("Player saved.");
             } else {
-                sender.sendMessage("failed to save player. Are they already in the database?");
+                sender.sendMessage("Failed to save player. Are they already in the database?");
             }
         } catch (RuntimeException e) {
-            sender.sendMessage("failed to run query");
+            sender.sendMessage("Failed to run query.");
             sender.sendMessage(e.getMessage());
             return true;
         }

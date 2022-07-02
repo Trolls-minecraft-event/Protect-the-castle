@@ -7,7 +7,6 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Troldehvalp" />
-        <module name="Troldehvalp SOLTS EVENT" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

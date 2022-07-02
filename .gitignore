@@ -1,4 +1,3 @@
-*.iml
 *.ipr
 *.iws
 
@@ -133,3 +132,4 @@ server/version_history.json
 /server/spigot.yml
 server/plugins/Troldehvalp-1.0-SNAPSHOT.jar
 /server/plugins/Event
+!/.idea/runConfigurations/
